@@ -33,6 +33,7 @@ export default function TaskDetail() {
   const handleUpdate = async updatedTask => {
     try {
       await updateTask(updatedTask)
+      setShowEditModal(false)
     } catch {
       console.error(error)
       alert("Errore durante l'eliminazione della task")
