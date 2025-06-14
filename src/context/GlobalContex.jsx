@@ -14,6 +14,7 @@ export const GlobalProvider = ({ children }) => {
       .catch(err => console.error(err))
   }, []);
 
+
   return (
     <GlobalContext.Provider value={{ tasks, setTasks }}>
       {children}
