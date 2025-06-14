@@ -1,15 +1,17 @@
 import { useParams, useNavigate } from "react-router-dom"
-import { useContext } from "react"
+import { useContext, useState } from "react"
 import { GlobalContext } from "../context/GlobalContex"
 import Modal from "../components/Modal"
+import EditTaskModal from "../components/EditTaskModal"
 
 export default function TaskDetail() {
 
   const { id } = useParams()
   const navigate = useNavigate()
-  const { tasks, removeTask } = useContext(GlobalContext)
+  const { tasks, removeTask, updateTask } = useContext(GlobalContext)
 
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
 
   const task = tasks.find(task => task.id === parseInt(id))
 
@@ -28,6 +30,15 @@ export default function TaskDetail() {
     }
   }
 
+  const handleUpdate = async updatedTask => {
+    try {
+      await updateTask(updatedTask)
+    } catch {
+      console.error(error)
+      alert("Errore durante l'eliminazione della task")
+    }
+  }
+
 
   return (
     <>
@@ -37,6 +48,7 @@ export default function TaskDetail() {
         <p><strong>Stato:</strong> {task.status}</p>
         <p><strong>Data di creazione:</strong> {new Date(task.createdAt).toLocaleDateString()}</p>
         <button className="btn btn-danger" onClick={() => setShowDeleteModal(true)}>Elimina Task</button>
+        <button className="btn btn-primary ms-4" onClick={() => setShowEditModal(true)}>Modifica Task</button>
         <Modal
           title="Conferma eliminazione"
           content={<p>Sei sicuro di voler eliminare questa task?</p>}
@@ -44,6 +56,11 @@ export default function TaskDetail() {
           onClose={() => setShowDeleteModal(false)}
           onConfirm={handleDelete}
           confirmText="Elimina" />
+        <EditTaskModal
+          task={task}
+          show={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onSave={handleUpdate} />
       </div>
 
     </>
