@@ -1,11 +1,12 @@
 import React from 'react'
-import { useState, useRef, useMemo } from 'react'
+import { useState, useRef, useMemo, useContext } from 'react'
+import { GlobalContext } from '../context/GlobalContex'
 
 const symbols = "!@#$%^&*()-_=+[]{}|;:'\",.<>?/`~";
 
 const AddTask = () => {
 
-
+  const { addTask } = useContext(GlobalContext)
   const [taskName, setTaskName] = useState('')
   const descriptionRef = useRef()
   const statusRef = useRef()
@@ -17,7 +18,7 @@ const AddTask = () => {
     }
   }, [taskName]);
 
-  const handleSubmit = event => {
+  const handleSubmit = async event => {
     event.preventDefault();
 
     if (taskNameError)
@@ -28,6 +29,16 @@ const AddTask = () => {
       description: descriptionRef.current.value,
       status: statusRef.current.value,
     };
+
+    try {
+      await addTask(newTask);
+      alert("Task aggiunta con successo!");
+      setTaskName('');
+      descriptionRef.current.value = '';
+      statusRef.current.value = 'To Do';
+    } catch (error) {
+      alert(error.message);
+    }
 
     fetch(`${import.meta.env.VITE_API_URL}/tasks`, {
       method: 'POST',
